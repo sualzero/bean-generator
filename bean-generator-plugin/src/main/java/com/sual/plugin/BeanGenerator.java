@@ -1,7 +1,5 @@
 package com.sual.plugin;
 
-import java.io.File;
-
 /*
  * Copyright 2001-2005 The Apache Software Foundation.
  *
@@ -20,22 +18,36 @@ import java.io.File;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
+
+import com.sual.plugin.bean.BeanWriter;
+import com.sual.plugin.common.util.BeanContext;
+import com.sual.plugin.xssf.excel.parse.XssfExcelParse;
 
 /**
  * bean-generator
  */
 @Mojo(name = "beanGenerator", defaultPhase = LifecyclePhase.GENERATE_SOURCES)
 public class BeanGenerator extends AbstractMojo {
-	/**
-	 * Location of the file.
-	 */
-	@Parameter(defaultValue = "${project.build.directory}", property = "outputDir", required = true)
-	private File outputDirectory;
 
 	public void execute() throws MojoExecutionException {
 
+		BeanContext context = new BeanContext();
+		
+		Log log = getLog();
+		
+		log.info("begin");
+		
+		context.setLog(log);
+		
+		log.info("log");
+		XssfExcelParse parse = new XssfExcelParse();
+				parse.parse(context);
+
+		
+		new BeanWriter().write(context);
+		log.info("end");
 	}
 }
